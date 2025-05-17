@@ -9,7 +9,7 @@ jobs:
     env:
       VERSION: ${{github.ref_name}}
     permissions:
-      contents: write
+      contents: write # Release Note作成のため
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -22,4 +22,4 @@ jobs:
           gh release create "${VERSION}" --title "${VERSION}" --generate-notes
           gh release upload "${VERSION}" "${RUNNER_TEMP}/example"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # github cliの認証用
