@@ -10,8 +10,8 @@ jobs:
       id-token: write
     steps:
       - name: Set safe session name
+        # リポジトリ名を取得し、許可されていない文字をハイフンに置換
         run: |
-          # リポジトリ名を取得し、許可されていない文字をハイフンに置換
           repo="${GITHUB_REPOSITORY#*/}"
           safe_repo=$(echo "$repo" | sed 's/[^a-zA-Z0-9+=,.@-]/-/g')
           echo "SESSION_NAME=${safe_repo}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
