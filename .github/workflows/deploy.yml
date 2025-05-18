@@ -1,16 +1,22 @@
 name: OpenID Connect
 on: push
-env: # AWSの認証アクションへ指定する入力パラメータを環境変数として定義
+env:
   ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/${{ secrets.ROLE_NAME }}
-  SESSION_NAME: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+  # SESSION_NAMEは後続stepで生成
 jobs:
   connect:
     runs-on: ubuntu-latest
     permissions:
-      # OIDCトークンの取得を許可
       id-token: write
     steps:
-      - uses: aws-actions/configure-aws-credentials@v4 # AWSの認証アクション
+      - name: Set safe session name
+        id: session_name
+        run: |
+          # リポジトリ名を取得し、許可されていない文字をハイフンに置換
+          repo="${GITHUB_REPOSITORY#*/}"
+          safe_repo=$(echo "$repo" | sed 's/[^a-zA-Z0-9+=,.@-]/-/g')
+          echo "SESSION_NAME=${safe_repo}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE_ARN }}
           role-session-name: ${{ env.SESSION_NAME }}
