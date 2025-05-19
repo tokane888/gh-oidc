@@ -23,7 +23,7 @@ runs:
     - run: |
         aws ecs describe-task-definition --task-definition "${TASK_DEFINITION}" \
         --query taskDefinition --output json > "${RUNNER_TEMP}/task-def.json"
-        env:
+      env:
         TASK_DEFINITION: ${{ inputs.task-definition }}
       shell: bash
     - uses: aws-actions/amazon-ecs-render-task-definition@v1 # タスク定義の修正
