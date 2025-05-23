@@ -7,6 +7,12 @@ inputs:
   dockerfile-path:
     required: true
     description: Dockerfileのパス
+  app-id:
+    required: true
+    description: GitHub AppのID
+  private-key:
+    required: true
+    description: GitHub AppのPrivate Key
 outputs:
   container-image:
     value: ${{ steps.meta.outputs.tags }}
@@ -19,8 +25,8 @@ runs:
       # GitHub Appsトークンの生成
       uses: actions/create-github-app-token@v1
       with:
-        app-id: ${{ secrets.APP_ID }}
-        private-key: ${{ secrets.PRIVATE_KEY }}
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
         repositories: ${{ env.TARGET_REPO }}
     - name: Set up GitHub App token for Go module access
       run: |
