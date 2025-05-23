@@ -15,6 +15,23 @@ runs:
   using: composite
   steps:
     - uses: aws-actions/amazon-ecr-login@v2 # Amazon ECRへのログイン
+    - id: create
+      # GitHub Appsトークンの生成
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ secrets.APP_ID }}
+        private-key: ${{ secrets.PRIVATE_KEY }}
+        repositories: ${{ env.TARGET_REPO }}
+    - name: Set up GitHub App token for Go module access
+      run: |
+        git config --global url."https://x-access-token:${{ steps.create.outputs.token }}@github.com/".insteadOf "https://github.com/"
+        echo "GOPRIVATE=github.com/${{ github.repository_owner }}" >> $GITHUB_ENV
+      shell: bash
+    - name: Pre-fetch Go modules
+      run: |
+        cd .
+        go mod download
+      shell: bash
     - uses: docker/metadata-action@v5
       # コンテナイメージのメタデータ生成
       id: meta

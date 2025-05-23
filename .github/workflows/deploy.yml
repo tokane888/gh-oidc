@@ -25,21 +25,6 @@ jobs:
           role-to-assume: ${{ env.ROLE_ARN }}
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ap-northeast-1
-      - id: create
-        # GitHub Appsトークンの生成
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
-          repositories: ${{ env.TARGET_REPO }}
-      - name: Set up GitHub App token for Go module access
-        run: |
-          git config --global url."https://x-access-token:${{ steps.create.outputs.token }}@github.com/".insteadOf "https://github.com/"
-          echo "GOPRIVATE=github.com/${{ github.repository_owner }}" >> $GITHUB_ENV
-      - name: Pre-fetch Go modules
-        run: |
-          cd .
-          go mod download
       - uses: ./.github/actions/container-build/
         # コンテナイメージのビルド
         id: build
